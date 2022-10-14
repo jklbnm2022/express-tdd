@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  },
+  "name": "extdd",
+  "version": "1.0.0",
+  "description": "study express",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha index.spec.js",
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "author": "seongho",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "should": "^13.2.3",
+    "supertest": "^6.3.0"
+  }
+}

@@ -70,7 +70,8 @@ app.post("/users", function (req, res) {
     return res.status(400).end()
   }
 
-  if (users.find(user => user.name === name)) {
+  const isConflict = users.find(user => user.name === name)
+  if (isConflict) {
     return res.status(409).end()
   }
 
@@ -88,6 +89,29 @@ app.delete("/users/:id", function (req, res) {
   users = users.filter(user => user.id !== id);
 
   res.status(204).end()
+})
+
+app.put('/users/:id', function (req, res) {
+  const id = parseInt(req.params.id, 10);
+  const name = req.body.name;
+  if (Number.isNaN(id)) {
+    console.log({ id })
+    return res.status(400).end()
+  }
+  if (!name) {
+    return res.status(400).end()
+  }
+  const user = users.find(user => user.id === id);
+  const isConflict = users.find(user => user.id !== id && user.name === name);
+  if (!user) {
+    return res.status(404).end()
+  }
+  if (isConflict) {
+    return res.status(409).end()
+  }
+
+  users = [...users.filter(user => user.id !== id), { id, name }]
+  res.json(users.find(user => user.id === id));
 })
 
 app.listen(PORT, function () {

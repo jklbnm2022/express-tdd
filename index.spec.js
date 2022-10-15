@@ -78,12 +78,18 @@ describe("DELETE /users/:id 는", () => {
 describe("POST /users 는", () => {
   describe('성공 시', () => {
     let body;
+    let id;
     const name = 'daniel'
     before(done => {
       request(app).post('/users').send({ name }).expect(201).end((err, res) => {
         body = res.body
+        id = body.id
         done()
       })
+    })
+    after(done => {
+      request(app).delete(`/users/${id}`).end(done)
+      console.log("생성한 유저 삭제 완료.")
     })
     it('생성된 유저 객체를 반환한다.', () => {
       body.should.have.property('id')
@@ -95,7 +101,7 @@ describe("POST /users 는", () => {
 
   describe('실패 시', () => {
     let body;
-    const name = `${Date.now()}`
+    const name = `daniel`
     before(done => {
       request(app).post('/users').send({ name }).expect(201).end((err, res) => {
         body = res.body
@@ -112,4 +118,65 @@ describe("POST /users 는", () => {
     })
   })
 
+})
+
+describe('PUT /users/:id 는', () => {
+  describe('성공 시', () => {
+    let id;
+    let body;
+    const name = `${Date.now()}`;
+
+    before(done => {
+      // user 조회
+      request(app).post('/users').send({ name }).end((err, res) => {
+        body = res.body;
+        id = body.id;
+        done()
+      })
+    })
+
+    it('바뀐 이름이 적용된다.', (done) => {
+      // 바뀐 name 
+      request(app).put(`/users/${id}`).send({ name: `${name}${name}` }).end((err, res) => {
+        res.body.should.have.property('name', `${name}${name}`)
+        done()
+      })
+    })
+  })
+
+  describe('실패 시', () => {
+    let id;
+    let body;
+    let name = Date.now();
+    let conflictName = Date.now() + 'conflict';
+    before(done => {
+      const rq = request(app)
+      // user 생성
+      rq.post('/users').send({ name }).end((err, res) => {
+        body = res.body;
+        id = body.id;
+        rq.post('/users').send({ name: conflictName }).end(done)
+      })
+    })
+
+    it('정수가 아닌 id일 경우 400응답', (done) => {
+      request(app).put(`/users/asuidiofsdjsdf`).send({ name }).expect(400).end(done)
+    })
+
+    it('name이 없을 경우 400 응답', (done) => {
+      request(app).put(`/users/${id}`).send({ name: '' }).expect(400).end(done)
+
+    })
+
+    it('없는 유저일 경우 404 응답', (done) => {
+      console.log({ id, body })
+      request(app).put(`/users/${id + id}`).send({ name }).expect(404).end(done)
+    })
+
+    it('이름이 중복일 경우 409 응답', (done) => {
+      request(app).put(`/users/${id}`).send({ name: conflictName }).expect(409).end(done)
+
+    })
+
+  })
 })

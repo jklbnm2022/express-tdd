@@ -41,6 +41,11 @@
 - express 는 body 를 지원하지 않아서, 파싱을 해야 하고, 외부 모듈이 필요하다.
   - body-parser: 글자같은 거. 미들웨어 형태로 추가해주면 됨.
   - multer: 이미지 같은 큰 데이터
+- 라우팅 - 요청 url에 대해 적절한 핸들러 함수로 연결해주는 기능
+
+- req(요청): req.params() req.query() req.body() 메소드를 주로 사용
+  - 요청 정보를 빼내기 쉽다.
+- res(응답): res.send(`문자열 응답`) res.status(상태코드) res.json(json 보내줌)
 
 ## user PUT 공부하던 중 잡생각
 

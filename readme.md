@@ -31,11 +31,6 @@
 - 실무에서는 jest 를 쓰는 것 같던데. typescript 도 아닌 javascript 로 만들고 있는 게 조금 실무와 멀어보이기는 한다.
 - 그렇지만 프론트 공부 할 때 과거 프레임워크의 개발사를 아는 게 현재 프레임워크를 이해하는데 도움을 주었던 것처럼, mocha, should, supertest 를 이해한다면 jest를 보다 쉽고 빠르게 익힐 수 있을 것이라는 기대가 생긴다. TDD 를 한 번도 안 해 본 입장에서는 이렇게 배워가는 게 더 편할지도 모르겠다는 생각도 든다.
 
-# 해야 할 일
-
-- express 에 typescript 얹어보기
-- mocha, should, superTest 로 만든 테스트코드를 jest 로 재구축 해 보기
-
 ## express 공부
 
 - express 는 body 를 지원하지 않아서, 파싱을 해야 하고, 외부 모듈이 필요하다.
@@ -50,4 +45,9 @@
 ## user PUT 공부하던 중 잡생각
 
 - POST, PUT 모두 하드코딩하는 건 마음에 안 든다. 특히 PUT 에서 주는 id와 name 을 하드코딩으로 넣고 어림짐작으로 때려맞추는 거는 나중에 수정 안되면 나쁠 것 같다. 자동화하려면 되도록 알아서 되게 해야한다.
-- 무튼 그런고로 PUT 을 하면서 요청을 chain 해서 보내는 방법을 찾느라 고생했다. async await 하면 편한데 지금 강의 보는 거 생각하면 일단은 promise chain 따라가는 게 맞는 것 같아서 그랬다. 잘 못찾다가 스택오버플로우 에서 [정답](https://stackoverflow.com/questions/21089842/how-to-chain-http-calls-with-superagent-supertest)을 찾았다.
+- 무튼 그런고로 PUT 을 하면서 요청을 chain 해서 보내는 방법을 찾느라 고생했다. async await 하면 편한데 지금 강의 보는 거 생각하면 일단은 promise chain 따라가는 게 맞는 것 같았다. 헤메다가 스택오버플로우 에서 [정답](https://stackoverflow.com/questions/21089842/how-to-chain-http-calls-with-superagent-supertest)을 찾았다.
+
+# 해야 할 일
+
+- express 에 typescript 얹어보기
+- mocha, should, superTest 로 만든 테스트코드를 jest 로 재구축 해 보기

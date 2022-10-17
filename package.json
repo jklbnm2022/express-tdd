@@ -9,8 +9,8 @@
   "description": "study express",
   "main": "index.js",
   "scripts": {
-    "test": "mocha index.spec.js",
-    "start": "node index.js",
+    "test": "NODE_ENV=test mocha api/**/**.spec.js",
+    "start": "node bin/www.js",
     "dev": "node index.js"
   },
   "author": "seongho",

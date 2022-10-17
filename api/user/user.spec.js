@@ -1,8 +1,13 @@
 const app = require("../../");
 const should = require("should");
 const request = require("supertest");
+const models = require("../../models");
 
 describe("GET /users 는", () => {
+    const users = [{ name: 'alice' }, { name: 'bek' }, { name: 'chris' }]
+    before(() => models.sequelize.sync({ force: true }))
+    before(() => models.User.bulkCreate(users))
+
     describe("성공 시", () => {
         it("유저 객체를 담은 배열로 응답한다.", (done) => {
             request(app)
@@ -37,6 +42,10 @@ describe("GET /users 는", () => {
 });
 
 describe("GET /users/:id 는", () => {
+    const users = [{ name: 'alice' }, { name: 'bek' }, { name: 'chris' }]
+    before(() => models.sequelize.sync({ force: true }))
+    before(() => models.User.bulkCreate(users))
+
     describe("성공 시", () => {
         it("id가 1인 유저 객체를 반환한다.", (done) => {
             request(app)
@@ -60,6 +69,10 @@ describe("GET /users/:id 는", () => {
 });
 
 describe("DELETE /users/:id 는", () => {
+    const users = [{ name: 'alice' }, { name: 'bek' }, { name: 'chris' }]
+    before(() => models.sequelize.sync({ force: true }))
+    before(() => models.User.bulkCreate(users))
+
     describe('성공 시', () => {
         it('204를 응답한다.', (done) => {
             request(app).delete('/users/1').expect(204).end(done)
@@ -75,6 +88,10 @@ describe("DELETE /users/:id 는", () => {
 
 
 describe("POST /users 는", () => {
+    const users = [{ name: 'alice' }, { name: 'bek' }, { name: 'chris' }]
+    before(() => models.sequelize.sync({ force: true }))
+    before(() => models.User.bulkCreate(users))
+
     describe('성공 시', () => {
         let body;
         let id;
@@ -119,62 +136,99 @@ describe("POST /users 는", () => {
 
 })
 
-describe('PUT /users/:id 는', () => {
-    describe('성공 시', () => {
-        let id;
-        let body;
-        const name = `${Date.now()}`;
+// describe.only('PUT /users/:id 는', () => {
+//     describe('성공 시', () => {
 
-        before(done => {
-            // user 조회
-            request(app).post('/users').send({ name }).end((err, res) => {
-                body = res.body;
-                id = body.id;
-                done()
-            })
+//         it('바뀐 이름이 적용된다.', (done) => {
+//             // 바뀐 name 
+//             request(app).put(`/users/${id}`).send({ name: `${name}${name}` }).end((err, res) => {
+//                 console.log({ body: res.body })
+//                 res.body.should.have.property('name', `${name}${name}`)
+//                 done()
+//             })
+//         })
+//     })
+
+//     describe('실패 시', () => {
+//         let id;
+//         let body;
+//         let name = Date.now();
+//         let conflictName = Date.now() + 'conflict';
+//         before(done => {
+//             const rq = request(app)
+//             // user 생성
+//             rq.post('/users').send({ name }).end((err, res) => {
+//                 body = res.body;
+//                 id = body.id;
+//                 rq.post('/users').send({ name: conflictName }).end(done)
+//             })
+//         })
+
+//         it('정수가 아닌 id일 경우 400응답', (done) => {
+//             request(app).put(`/users/asuidiofsdjsdf`).send({ name }).expect(400).end(done)
+//         })
+
+//         it('name이 없을 경우 400 응답', (done) => {
+//             request(app).put(`/users/${id}`).send({ name: '' }).expect(400).end(done)
+
+//         })
+
+//         it('없는 유저일 경우 404 응답', (done) => {
+//             request(app).put(`/users/${Date.now()}`).send({ name }).expect(404).end(done)
+//         })
+
+//         it('이름이 중복일 경우 409 응답', (done) => {
+//             request(app).put(`/users/${id}`).send({ name: conflictName }).expect(409).end(done)
+
+//         })
+
+//     })
+// })
+
+describe('PUT /users/:id', () => {
+    const users = [{ name: 'alice' }, { name: 'bek' }, { name: 'chris' }];
+    before(() => models.sequelize.sync({ force: true }));
+    before(() => models.User.bulkCreate(users));
+
+    describe('성공시', () => {
+        it('변경된 name을 응답한다', (done) => {
+            const name = 'chally';
+            request(app)
+                .put('/users/3')
+                .send({ name })
+                .end((err, res) => {
+                    res.body.should.have.property('name', name);
+                    done();
+                });
         })
-
-        it('바뀐 이름이 적용된다.', (done) => {
-            // 바뀐 name 
-            request(app).put(`/users/${id}`).send({ name: `${name}${name}` }).end((err, res) => {
-                res.body.should.have.property('name', `${name}${name}`)
-                done()
-            })
+    });
+    describe('실패시', () => {
+        it('정수가 아닌 id일 경우 400을 응답한다', done => {
+            request(app)
+                .put('/users/one')
+                .expect(400)
+                .end(done);
+        });
+        it('name이 없을 경우 400을 응답한다', done => {
+            request(app)
+                .put('/users/1')
+                .send({})
+                .expect(400)
+                .end(done);
+        });
+        it('없는 유저일 경우 404을 응답한다', done => {
+            request(app)
+                .put('/users/999')
+                .send({ name: 'foo' })
+                .expect(404)
+                .end(done);
+        });
+        it('이름이 중복일 경우 409을 응답한다', done => {
+            request(app)
+                .put('/users/3')
+                .send({ name: 'bek' })
+                .expect(409)
+                .end(done);
         })
-    })
-
-    describe('실패 시', () => {
-        let id;
-        let body;
-        let name = Date.now();
-        let conflictName = Date.now() + 'conflict';
-        before(done => {
-            const rq = request(app)
-            // user 생성
-            rq.post('/users').send({ name }).end((err, res) => {
-                body = res.body;
-                id = body.id;
-                rq.post('/users').send({ name: conflictName }).end(done)
-            })
-        })
-
-        it('정수가 아닌 id일 경우 400응답', (done) => {
-            request(app).put(`/users/asuidiofsdjsdf`).send({ name }).expect(400).end(done)
-        })
-
-        it('name이 없을 경우 400 응답', (done) => {
-            request(app).put(`/users/${id}`).send({ name: '' }).expect(400).end(done)
-
-        })
-
-        it('없는 유저일 경우 404 응답', (done) => {
-            request(app).put(`/users/${id + id}`).send({ name }).expect(404).end(done)
-        })
-
-        it('이름이 중복일 경우 409 응답', (done) => {
-            request(app).put(`/users/${id}`).send({ name: conflictName }).expect(409).end(done)
-
-        })
-
     })
 })

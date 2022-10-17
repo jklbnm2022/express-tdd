@@ -1,13 +1,11 @@
-// 라우팅 설정
-const express = require("express")
-const userRoute = express.Router()
-const ctrl = require('./user.ctrl')
+const express = require('express');
+const router = express.Router();
+const ctrl = require('./user.ctrl');
 
-userRoute.get("/", ctrl.getUsers);
-userRoute.get("/:id", ctrl.getUser);
-userRoute.post("/", ctrl.postUser);
-userRoute.put('/:id', ctrl.putUser)
-userRoute.delete("/:id", ctrl.deleteUser)
+router.get('/', ctrl.getUsers);
+router.get('/:id', ctrl.getUser);
+router.delete('/:id', ctrl.deleteUser);
+router.post('/', ctrl.postUser);
+router.put('/:id', ctrl.putUser);
 
-module.exports = userRoute;
-
+module.exports = router;
